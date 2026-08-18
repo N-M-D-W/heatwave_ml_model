@@ -91,6 +91,11 @@ def prepare_weather_data() -> tuple[pd.DataFrame, int, int]:
     row_count_before = len(merged)
     merged = merged.drop_duplicates().reset_index(drop=True)
     duplicate_count = row_count_before - len(merged)
+    require_columns(merged, ["평균기온(°C)"])
+    mean_temperature = merged["평균기온(°C)"].astype("string").str.strip()
+    merged = merged.loc[mean_temperature.notna() & mean_temperature.ne("")].reset_index(
+        drop=True
+    )
     merged = normalize_weather_date_column(merged)
     return normalize_station_column(merged), len(csv_files), duplicate_count
 
